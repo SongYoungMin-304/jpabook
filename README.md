@@ -32,3 +32,27 @@ JAVA -> 객체   < - > 관계형 DB
 6) embedded embeddable -> 사용시 delivery 테이블에 address 클래스 필드값이 전부 추가됨
 
 
+
+
+2022.12.28
+- JPA 서비스 관련 개발 진행
+
+1) 도메인 모델 패턴으로 개발
+> 도메인 객체에 핵심 기능 적재
+
+
+* INTELLIJ 단축키
+-- ctrl alt n 메소드 합치기
+-- crtl alt v 반환값 만들어주기
+-- ctrl shift T -> 테이스 케이스 만들기
+-- ctrl alt m -> 메소드 분리
+-- ctrl alt p -> 매개변수로 빼기.. 
+-- ctrl shift t -> 테스트 왔다리 갔다리
+
+
+
+
+![image](https://user-images.githubusercontent.com/56577599/209759314-54e76ec5-a851-4ee0-8612-8daa76eded5f.png)
+
+
+
