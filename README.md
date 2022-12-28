@@ -32,6 +32,8 @@ JAVA -> 객체   < - > 관계형 DB
 6) embedded embeddable -> 사용시 delivery 테이블에 address 클래스 필드값이 전부 추가됨
 
 
+
+
 2022.12.28
 - JPA 서비스 관련 개발 진행
 
