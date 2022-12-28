@@ -1,6 +1,7 @@
 package jpashop.jpabook.domain.item;
 
 import jpashop.jpabook.domain.Category;
+import jpashop.jpabook.exception.NotEnoughStockEception;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,4 +30,23 @@ public abstract class Item {
             inverseJoinColumns = @JoinColumn(name ="item_id"))
     private List<Category> categories = new ArrayList<>();
 
+    // 비즈니스 로직
+
+    /*
+      stock 증가
+     */
+    public void addStock(int quantity){
+        this.stockQuantity += quantity;
+    }
+
+    /*
+      stock 감소
+     */
+    public void removeStock(int quantity){
+        int resStock = this.stockQuantity - quantity;
+        if(resStock < 0){
+            throw new NotEnoughStockEception("need more stock");
+        }
+        this.stockQuantity = resStock;
+    }
 }
