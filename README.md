@@ -56,3 +56,52 @@ JAVA -> 객체   < - > 관계형 DB
 
 
 
+2022.12.29
+- JPA 상품, 주문 관련 개발 진행
+
+
+
+* 데이터를 업데이트 하는 방법 
+
+1) merge 사용 (전체 컬럼을 정의해 줘야 하는 문제가 있음)
+2) 변경감지(dirty check) 사용
+
+EX) merge 사용
+{ 
+EntityManager em
+
+Book book = new Book();
+book.set~~
+
+em.merge(book)
+}
+
+EX) 변경 감지 사용
+{
+EntityManager em
+
+Book book = new Book();
+book.set~~
+
+Book book = em.find~
+book.set~~
+}
+--> 엔티티를 영속성에 넣기 때문에 MERGE 또는 SAVE를 안하더라도 알아서 변경감지를 통해서 트랜잭션이 마무리 될때 업데이트를 함
+
+
+
+* 컨트롤러에서 엔티티를 불러오거나 생성하지 말것!
+> 주문 등을 생성 시 TRANSCATION 안에 존재하면 변경 감지 등으로 회원 정보등도 업데이트 할 수 있음
+
+
+
+
+
+
+
+
+
+
+
+
+
