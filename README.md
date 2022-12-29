@@ -78,6 +78,7 @@ book.set~~
 
 em.merge(book)
 }
+
 ![image](https://user-images.githubusercontent.com/56577599/209895595-b17aae9c-b3dd-47a5-89b9-6818e0bea2b3.png)
 
 
@@ -91,7 +92,10 @@ book.set~~
 Book book = em.find~
 book.set~~
 }
+
 ![image](https://user-images.githubusercontent.com/56577599/209895572-2ca2dbfb-cf85-4751-9490-c6bcb845718c.png)
+
+
 --> 엔티티를 영속성에 넣기 때문에 MERGE 또는 SAVE를 안하더라도 알아서 변경감지를 통해서 트랜잭션이 마무리 될때 업데이트를 함
 
 
