@@ -66,6 +66,9 @@ JAVA -> 객체   < - > 관계형 DB
 1) merge 사용 (전체 컬럼을 정의해 줘야 하는 문제가 있음)
 2) 변경감지(dirty check) 사용
 
+![image](https://user-images.githubusercontent.com/56577599/209895623-97b1d6ed-dbaf-41f1-bf1f-5c7f857cf8ef.png)
+
+
 EX) merge 사용
 { 
 EntityManager em
@@ -75,6 +78,8 @@ book.set~~
 
 em.merge(book)
 }
+![image](https://user-images.githubusercontent.com/56577599/209895595-b17aae9c-b3dd-47a5-89b9-6818e0bea2b3.png)
+
 
 EX) 변경 감지 사용
 {
@@ -86,7 +91,11 @@ book.set~~
 Book book = em.find~
 book.set~~
 }
+![image](https://user-images.githubusercontent.com/56577599/209895572-2ca2dbfb-cf85-4751-9490-c6bcb845718c.png)
 --> 엔티티를 영속성에 넣기 때문에 MERGE 또는 SAVE를 안하더라도 알아서 변경감지를 통해서 트랜잭션이 마무리 될때 업데이트를 함
+
+
+>>>> 결론적으로 영속성으로 만드는 시점을 조회 할때 할거냐 MERGE 할때 할 것인가임
 
 
 
