@@ -15,6 +15,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -33,22 +38,39 @@ public class SecurityConfig {
    /* @Autowired
     CustomAuthenticationProvider customAuthenticationProvider;
 */
+    // Auth Provider 주입
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+    public AuthenticationProvider authenticationProvider(){
+        return new CustomAuthenticationProvider();
+    }
 
+/*    @Bean
+    public UserDetailsService userDetailsService(PasswordEncoder encoder) {
+        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+        manager.createUser(User.withUsername("admin").password(encoder.encode("1111")).roles("ADMIN", "USER", "SYS").build());
+        manager.createUser(User.withUsername("user").password(encoder.encode("1111")).roles("USER").build());
+        manager.createUser(User.withUsername("sys").password(encoder.encode("1111")).roles("SYS", "USER").build());
+
+        return manager;
+    }*/
+
+    /*@Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
+    }*/
+
+    //@Bean
+    //스프링 버전 업그레이드에 따른 filterChain 방식 변경
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
 
         http
                 .formLogin()
                 .permitAll()
-                //.successHandler(successHandler())
-                //.failureHandler(failHandler())
+                .successHandler(successHandler())
+                .failureHandler(failHandler())
                 .and()
                 .authorizeRequests()
-                .antMatchers("/hello")
-                .permitAll()
                 .anyRequest()
-                //.permitAll()
-
                 .authenticated()
         ;
 
@@ -62,9 +84,7 @@ public class SecurityConfig {
             @Override
             public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                                 Authentication authentication) throws IOException, ServletException {
-                // TODO Auto-generated method stub
-                log.info("tets");
-                response.sendRedirect("/members");
+                response.sendRedirect("/");
             }
         };
     }
@@ -76,7 +96,6 @@ public class SecurityConfig {
             @Override
             public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                                 AuthenticationException exception) throws IOException, ServletException {
-                // TODO Auto-generated method stub
             }
         };
     }

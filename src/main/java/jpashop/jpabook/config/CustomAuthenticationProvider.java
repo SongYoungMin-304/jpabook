@@ -2,38 +2,29 @@ package jpashop.jpabook.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
 
 
 @Slf4j
-@Component
 public class CustomAuthenticationProvider implements AuthenticationProvider{
 
 
+    /*
+     * jpa 회원 가입 기능 관련 개발 이후 적용 예정..
+     */
     @Override
     public Authentication authenticate(Authentication authentication) {
 
-       /* String username = authentication.getName();
-        String password = (String) authentication.getCredentials();
-
-        log.info("흠"+authentication.getDetails());
-
+       String username = authentication.getName();
+       String password = (String) authentication.getCredentials();
 
         if(!"root".equals(username) || !"1234".equals(password)) {
             log.info("Invalid UserName or Password");
             throw new BadCredentialsException(username);
         }
 
-        log.info("정상...");
-
-        //user.getAuthorities()*/
-
-        log.info("정상...");
-
-        return new UsernamePasswordAuthenticationToken("1", "2");
-
+        return new CustomAuthenticationToken(username, password, null);
     }
 
     @Override
