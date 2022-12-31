@@ -1,3 +1,4 @@
+/*
 package jpashop.jpabook.config;
 
 import lombok.RequiredArgsConstructor;
@@ -35,15 +36,18 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-   /* @Autowired
+   */
+/* @Autowired
     CustomAuthenticationProvider customAuthenticationProvider;
-*/
+*//*
+
     // Auth Provider 주입
     @Bean
     public AuthenticationProvider authenticationProvider(){
         return new CustomAuthenticationProvider();
     }
 
+*/
 /*    @Bean
     public UserDetailsService userDetailsService(PasswordEncoder encoder) {
         InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
@@ -52,26 +56,31 @@ public class SecurityConfig {
         manager.createUser(User.withUsername("sys").password(encoder.encode("1111")).roles("SYS", "USER").build());
 
         return manager;
-    }*/
+    }*//*
 
-    /*@Bean
+
+    */
+/*@Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
-    }*/
+    }*//*
+
 
     //@Bean
     //스프링 버전 업그레이드에 따른 filterChain 방식 변경
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
 
         http
+                .csrf().disable()
                 .formLogin()
                 .permitAll()
-                .successHandler(successHandler())
-                .failureHandler(failHandler())
+                //.successHandler(successHandler())
+                //.failureHandler(failHandler())
                 .and()
                 .authorizeRequests()
                 .anyRequest()
-                .authenticated()
+                .permitAll()
+//                .authenticated()
         ;
 
         return http.build();
@@ -101,3 +110,4 @@ public class SecurityConfig {
     }
 
 }
+*/
