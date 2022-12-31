@@ -1,3 +1,4 @@
+/*
 package jpashop.jpabook.config;
 
 import lombok.extern.slf4j.Slf4j;
@@ -10,9 +11,11 @@ import org.springframework.security.core.Authentication;
 public class CustomAuthenticationProvider implements AuthenticationProvider{
 
 
-    /*
+    */
+/*
      * jpa 회원 가입 기능 관련 개발 이후 적용 예정..
-     */
+     *//*
+
     @Override
     public Authentication authenticate(Authentication authentication) {
 
@@ -32,3 +35,4 @@ public class CustomAuthenticationProvider implements AuthenticationProvider{
        return true;
     }
 }
+*/

@@ -1,3 +1,4 @@
+/*
 package jpashop.jpabook.config;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -28,4 +29,4 @@ public class CustomAuthenticationToken extends AbstractAuthenticationToken {
     public Object getPrincipal() {
         return this.email;
     }
-}
+}*/
