@@ -34,7 +34,7 @@ public class OrderService {
 
         //배송정보생성
         Delivery delivery = new Delivery();
-        delivery.setAddres(member.getAddress());
+        delivery.setAddress(member.getAddress());
 
         //주문상품 생성
         OrderItem orderItem = OrderItem.createOrderItem(item, item.getPrice(), count);
