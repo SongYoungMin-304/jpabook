@@ -15,5 +15,5 @@ spring:
 
 logging.level:
   org.hibernate.SQL: debug
-  org.hibernate.type: trace
+  # org.hibernate.type: trace
 #  org.hibernate.type: trace: trace #스프링 부트 3.x, hibernate6
