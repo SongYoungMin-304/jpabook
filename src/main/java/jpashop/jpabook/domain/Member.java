@@ -26,6 +26,7 @@ public class Member {
 
     // mappey By 주인 값이 아님
     //@JsonIgnore JSON 불러올 때 안가져오게 처리
+    @JsonIgnore
     @OneToMany(mappedBy = "member")
     private List<Order> orders = new ArrayList<>();
 

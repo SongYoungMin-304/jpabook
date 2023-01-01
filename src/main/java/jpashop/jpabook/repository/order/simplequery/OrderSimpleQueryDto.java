@@ -20,7 +20,7 @@ public class OrderSimpleQueryDto {
         name = order.getMember().getName(); //LAZY 초기화
         orderDate = order.getOrderDate();
         orderStatus = order.getStatus();
-        address = order.getDelivery().getAddres(); //LAZY 초기화
+        address = order.getDelivery().getAddress(); //LAZY 초기화
     }
 
     public OrderSimpleQueryDto(Long orderId, String name, LocalDateTime orderDate, OrderStatus orderStatus, Address address){
