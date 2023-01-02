@@ -288,7 +288,7 @@ V1
 
 실행 쿼리
 
-```java
+```sql
 <!-- 주문조회 -->
 select
         * 
@@ -446,7 +446,7 @@ public OrderSimpleQueryDto(Order order){
 
 실행 쿼리
 
-```java
+```sql
 select
         order0_.order_id as order_id1_6_0_,
         member1_.member_id as member_id1_4_1_,
