@@ -109,14 +109,7 @@ book.set~~
 
 
 # 2023.01.02
-https://www.notion.so/300f745b2f464f2488696bca9adabe6e#97f4326c722d4bfdb62d4e2f20fd056c
-
-https://www.notion.so/300f745b2f464f2488696bca9adabe6e#0a23d4426d76415b8b7b58d990daac2e
-
-https://www.notion.so/300f745b2f464f2488696bca9adabe6e#5dd300dcf12c4333ba77d919791b7876
-
-https://www.notion.so/300f745b2f464f2488696bca9adabe6e#fefd9b4261c34c98b4e778d524dea1d6
-
+![image](https://user-images.githubusercontent.com/56577599/210241361-ccae2787-a3f2-4e76-b5a8-9ef4a88aa10a.png)
 
 ## 회원 API 관련 정리
 
