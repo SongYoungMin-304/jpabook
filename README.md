@@ -109,14 +109,14 @@ book.set~~
 
 
 # 2023.01.02
+https://www.notion.so/300f745b2f464f2488696bca9adabe6e#97f4326c722d4bfdb62d4e2f20fd056c
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/557f66cb-3a3e-4a15-9f31-35309e04e4b2/Untitled.png)
+https://www.notion.so/300f745b2f464f2488696bca9adabe6e#0a23d4426d76415b8b7b58d990daac2e
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/87beefe4-7647-450b-9784-7b805ae2c53e/Untitled.png)
+https://www.notion.so/300f745b2f464f2488696bca9adabe6e#5dd300dcf12c4333ba77d919791b7876
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/e68d9b8f-1bca-4082-ba92-15246c132617/Untitled.png)
+https://www.notion.so/300f745b2f464f2488696bca9adabe6e#fefd9b4261c34c98b4e778d524dea1d6
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/5d2920ef-4162-43bd-a88d-2191ce5e1560/Untitled.png)
 
 ## 회원 API 관련 정리
 
@@ -266,10 +266,13 @@ V2
 3) Result 클래스로 컬렉션을 감싸서 나중에라도 필요한 필드를 추가할 수 있다.
 
 
-주문 API 관련 정리
-간단한 주문 조회(X TO ONE)
+### 간단한 주문 조회(X TO ONE)
+
 V1
-엔티티를 직접 노출
+
+- 엔티티를 직접 노출
+
+```java
 @GetMapping("/api/v1/simple-orders")
  public List<Order> ordersV1() {
       List<Order> all = orderRepository.findAllByString(new OrderSearch());
@@ -279,12 +282,20 @@ V1
       }
       return all;
  }
+```
+
 1) 엔티티를 직접 노출하는 것은 좋지 않다.
+
 2) ORDER → MEMBER, ORDER- > ADDRESS 는 지연 로딩이여서 실제 엔티티 대신 프록시 존재해서 에러 발생
+
 → jackson 라이브러리는 해당 방식을 몰라서 Hibernate5Module 을 스프링 빈으로 등록하며 해결
+
 3) 엔티티를 직접 노출할 때는 한 곳을 @JsonIgnore 해야함
 → Member → Order, Order → Member 무한 동작
+
 실행 쿼리
+
+```java
 <!-- 주문조회 -->
 select
         * 
@@ -328,8 +339,6 @@ select
     where
         delivery0_.delivery_id=?
 
-
-
 select
         member0_.member_id as member_id1_4_0_,
         member0_.city as city2_4_0_,
@@ -341,7 +350,6 @@ select
     where
         member0_.member_id=?
 
-
 select
         delivery0_.delivery_id as delivery_id1_2_0_,
         delivery0_.city as city2_2_0_,
@@ -352,7 +360,6 @@ select
         delivery delivery0_ 
     where
         delivery0_.delivery_id=?
-
 
 <!-- orderItem 은 CasCade 여서 조회 되는 듯? -->
 select
@@ -368,7 +375,6 @@ select
     where
         orderitems0_.order_id=?
 
-
 select
         orderitems0_.order_id as order_id5_5_0_,
         orderitems0_.order_item_id as order_item_id1_5_0_,
@@ -381,8 +387,13 @@ select
         order_item orderitems0_ 
     where
         orderitems0_.order_id=?
+```
+
 V2
-엔티티를 DTO로 변환하는 일반적인 방법
+
+- 엔티티를 DTO로 변환하는 일반적인 방법
+
+```java
 @GetMapping("/api/v2/simple-orders")
 public List<SimpleOrderDto> ordersV2() {
       List<Order> orders = orderRepository.findAll();
@@ -391,13 +402,23 @@ public List<SimpleOrderDto> ordersV2() {
       .collect(toList());
       return result;
 }
+```
+
 1) 엔티티 대신 DTO를 반환하는 장점은 존재하나 쿼리 실행 수는 동일한다.
+
 주문 → 1번(2개 나옴)
+
 회원 → 2번
+
 배달 → 2번
+
 ORDERITEM → 2번
+
 V3
-엔티티를 DTO로 변환 & 페치 조인 최적화
+
+- 엔티티를 DTO로 변환 & 페치 조인 최적화
+
+```java
 @GetMapping("/api/v3/simple-orders")
 public List<SimpleOrderDto> ordersV3() {
       List<Order> orders = orderRepository.findAllWithMemberDelivery();
@@ -417,7 +438,6 @@ public List<Order> findAllWithMemberDelivery() {
  .getResultList();
 }
 
-
 ~~~
 
 public OrderSimpleQueryDto(Order order){
@@ -427,9 +447,13 @@ public OrderSimpleQueryDto(Order order){
         orderStatus = order.getStatus();
         address = order.getDelivery().getAddress(); //LAZY 초기화
     }
+```
 
 1) 지연로딩되서 여러번 쿼리가 실행 되는 것을 막기 위해서 전체를 조회한다.
+
 실행 쿼리
+
+```java
 select
         order0_.order_id as order_id1_6_0_,
         member1_.member_id as member_id1_4_1_,
@@ -454,16 +478,19 @@ select
     inner join
         delivery delivery2_ 
             on order0_.delivery_id=delivery2_.delivery_id
+```
+
 V4
-JPA 에서 ENTITY 를 직접 조회
+
+- JPA 에서 ENTITY 를 직접 조회
+
+```java
 @GetMapping("/api/v4/simple-orders")
      public List<OrderSimpleQueryDto> ordersV4() {
      return orderSimpleQueryRepository.findOrderDtos();
 }
 
-
 ~~~~
-
 
 public List<OrderSimpleQueryDto> findOrderDtos() {
  return em.createQuery(
@@ -476,7 +503,6 @@ o.orderDate, o.status, d.address)" +
  .getResultList();
  }
 
-
 ~~~~~
 
 public OrderSimpleQueryDto(Long orderId, String name, LocalDateTime 
@@ -487,16 +513,25 @@ orderDate, OrderStatus orderStatus, Address address) {
  this.orderStatus = orderStatus;
  this.address = address;
  }
+```
+
 1) 애플리케이션 네트웍 용량 최적화
- * 쿼리 방식 선택 권장 순서
-우선 엔티티를 DTO로 변환하는 방법을 선택한다.
-필요하면 페치 조인으로 성능을 최적화 한다. 대부분의 성능 이슈가 해결된다.
-그래도 안되면 DTO로 직접 조회하는 방법을 사용한다.
-최후의 방법은 JPA가 제공하는 네이티브 SQL이나 스프링 JDBC Template을 사용해서 SQL을 직접
-사용한다
-복잡한 주문 조회(X TO MANY)
+
+ *** 쿼리 방식 선택 권장 순서**
+
+1. **우선 엔티티를 DTO로 변환하는 방법을 선택한다.**
+2. **필요하면 페치 조인으로 성능을 최적화 한다. 대부분의 성능 이슈가 해결된다.**
+3. **그래도 안되면 DTO로 직접 조회하는 방법을 사용한다.**
+4. **최후의 방법은 JPA가 제공하는 네이티브 SQL이나 스프링 JDBC Template을 사용해서 SQL을 직접
+사용한다**
+
+### 복잡한 주문 조회(X TO MANY)
+
 V1
-엔티티를 직접 노출
+
+- 엔티티를 직접 노출
+
+```java
 @GetMapping("/api/v1/orders")
  public List<Order> ordersV1() {
       List<Order> all = orderRepository.findAllByString(new OrderSearch());
@@ -508,9 +543,15 @@ V1
  }
  return all;
  }
+```
+
 1) 위와 동일하지만 ORDERITEM 도 포함해서 조회
+
 V2
-엔티티를 DTO로 변환하는 일반적인 방법
+
+- 엔티티를 DTO로 변환하는 일반적인 방법
+
+```java
 @GetMapping("/api/v2/orders")
 public List<OrderDto> ordersV2() {
       List<Order> orders = orderRepository.findAll();
@@ -519,7 +560,6 @@ public List<OrderDto> ordersV2() {
       .collect(toList());
       return result;
 }
-
 
 ~~~~~
 
@@ -541,13 +581,23 @@ public OrderItemDto(OrderItem orderItem){
             orderPrice = orderItem.getOrderPrice();
             count = orderItem.getCount();
         }
+```
+
 1) 지연로딩으로 인해 많은 쿼리 진행
+
 → order 1번
+
 → member, address N번
+
 → orderItem N번
+
 → Item N번
+
 V3
-엔티티를 DTO로 변환 - 페치 조인 최적화
+
+- 엔티티를 DTO로 변환 - 페치 조인 최적화
+
+```java
 public List<OrderDto> ordersV3() {
       List<Order> orders = orderRepository.findAllWithItem();
       List<OrderDto> result = orders.stream()
@@ -567,13 +617,20 @@ public List<Order> findAllWithItem() {
  " join fetch oi.item i", Order.class)
  .getResultList();
 }
+```
+
 1) 페치조인으로 쿼리가 한번만 실행됨
+
 2) 1대 다 관계로 페이징 불가능(가능은 한데 메모리에 다올림)
+
 3) 컬렉션 여러번 fetch join 불가능
- 
- jpa3
+
+
 V3.1
-엔티티를 DTO로 변환 - 페이징과 한계돌파
+
+- 엔티티를 DTO로 변환 - 페이징과 한계돌파
+
+```java
 @GetMapping("/api/v3.1/orders")
 public List<OrderDto> ordersV3_page(@RequestParam(value = "offset",
 defaultValue = "0") int offset,
@@ -587,7 +644,6 @@ defaultValue = "0") int offset,
  return result;
 }
 
-
 ~~~~
 
 public List<Order> findAllWithMemberDelivery() {
@@ -597,14 +653,23 @@ public List<Order> findAllWithMemberDelivery() {
                         " join fetch o.delivery d", Order.class
         ).getResultList();
     }
+```
+
 1) x to one 만 fetch 조인해서 페이징 이후
+
 2) to many 는 지연 로딩 처리(옵션으로 in 안에 쿼리 넣어서 최적화)
+
+```java
 spring:
  jpa:
  properties:
  hibernate:
  default_batch_fetch_size: 1000
+```
+
 실행 쿼리
+
+```java
 <!-- 주문 회원 배송 fetch join -->
 select
         * 
@@ -635,7 +700,6 @@ select
                 on order0_.delivery_id=delivery2_.delivery_id ) 
     where
         rownum <= ?
-
 
 <!-- order_item in으로 한방에 조회 -->
 select
@@ -672,8 +736,13 @@ select
         item0_.item_id in (
             ?, ?, ?, ?
         )
+```
+
 V4
-JPA에서 DTO를 직접 조회
+
+- JPA에서 DTO를 직접 조회
+
+```java
 @GetMapping("/api/v4/orders")
     List<OrderQueryDto> orderV4(
             @RequestParam(value ="offset", defaultValue = "0") int offset,
@@ -682,7 +751,6 @@ JPA에서 DTO를 직접 조회
         return orderQueryRepository.findOrderQueryDtos();
     }
 }
-
 
 ~~~~~
 public List<OrderQueryDto> findOrderQueryDtos() {
@@ -696,8 +764,6 @@ public List<OrderQueryDto> findOrderQueryDtos() {
  });
        return result;
  }
-
-
 
 private List<OrderQueryDto> findOrders() {
   return em.createQuery(
@@ -722,15 +788,21 @@ private List<OrderItemQueryDto> findOrderItems(Long orderId) {
        .setParameter("orderId", orderId)
        .getResultList();
  }
+```
+
 1) DTO를 직접 조회 하고
+
 2) 지연 로딩 처럼 ORDERITEM 이랑 ITEM을 따로 가져와서 조회한다.
+
 V5
-JPA에서 DTO를 직접 조회 -컬렉션 조회 최적화
+
+- JPA에서 DTO를 직접 조회 -컬렉션 조회 최적화
+
+```java
 @GetMapping("/api/v5/orders")
 public List<OrderQueryDto> ordersV5() {
    return orderQueryRepository.findAllByDto_optimization();
 }
-
 
 ~~~~~
 
@@ -762,9 +834,15 @@ oi.orderPrice, oi.count)" +
  .getResultList();
  return orderItems.stream()
  .collect(Collectors.groupingBy(OrderItemQueryDto::getOrderId));
+```
+
 1) 메모리에 담아서 한번에 JPA 쿼리 실행 시키는 정도..
+
 V6
-JPA에서 DTO로 직접 조회, 플랫 데이터 최적
+
+- JPA에서 DTO로 직접 조회, 플랫 데이터 최적
+
+```java
 @GetMapping("/api/v6/orders")
 public List<OrderQueryDto> ordersV6() {
  List<OrderFlatDto> flats = orderQueryRepository.findAllByDto_flat();
@@ -779,8 +857,12 @@ public List<OrderQueryDto> ordersV6() {
   e.getKey().getAddress(), e.getValue()))
    .collect(toList());
 }
-1) 복잡하지만 결국은 JOIN 으로 한번에 가져와서 DISTINCT 처리를 메모리에서 한다는 뜻
-2) 페이징 안되고
-3) 메모리 부하도 걱정됨
-4) 쿼리도 빠를 거라는 보장이 없음
+```
 
+1) 복잡하지만 결국은 JOIN 으로 한번에 가져와서 DISTINCT 처리를 메모리에서 한다는 뜻
+
+2) 페이징 안되고
+
+3) 메모리 부하도 걱정됨
+
+4) 쿼리도 빠를 거라는 보장이 없음
