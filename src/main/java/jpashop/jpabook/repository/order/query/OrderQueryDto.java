@@ -3,11 +3,13 @@ package jpashop.jpabook.repository.order.query;
 import jpashop.jpabook.domain.Address;
 import jpashop.jpabook.domain.OrderStatus;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+@EqualsAndHashCode(of = "orderId")
 public class OrderQueryDto {
 
     private Long orderId;

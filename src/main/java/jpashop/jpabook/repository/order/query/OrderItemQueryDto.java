@@ -8,13 +8,13 @@ public class OrderItemQueryDto {
 
     @JsonIgnore
     private Long orderId;
-    private String itemNmae;
+    private String itemName;
     private int orderPrice;
     private int count;
 
-    public OrderItemQueryDto(Long orderId, String itemNmae, int orderPrice, int count) {
+    public OrderItemQueryDto(Long orderId, String itemName, int orderPrice, int count) {
         this.orderId = orderId;
-        this.itemNmae = itemNmae;
+        this.itemName = itemName;
         this.orderPrice = orderPrice;
         this.count = count;
     }
