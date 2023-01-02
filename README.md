@@ -108,6 +108,154 @@ book.set~~
 
 
 
+2023.01.02
+
+## 회원 API 관련 정리
+
+### 회원 등록
+
+V1
+
+- 요청 값으로 **엔티티**를 직접 받는다.
+
+```java
+@PostMapping("/api/v1/members")
+ public CreateMemberResponse saveMemberV1(@RequestBody @Valid Member member)
+{
+      Long id = memberService.join(member);
+      return new CreateMemberResponse(id);
+ }
+```
+
+1) 엔티티에 API 검증을 위한 로직 적재(@NotEmpty)
+
+2) API 스펙이 엔티티에 의존적이게 됨
+
+3) API 스펙에 따라서 DTO를 제작하여서 받고 반환해야함
+
+V2
+
+- 엔티티 대신에 **DTO**를 RequestBody에 매핑
+
+```java
+@PostMapping("/api/v2/members")
+ public CreateMemberResponse saveMemberV2(@RequestBody @Valid CreateMemberRequest request) {
+      Member member = new Member();
+      member.setName(request.getName());
+      Long id = memberService.join(member);
+      return new CreateMemberResponse(id);
+ }
+```
+
+1) 엔티티가 변해도 API 스펙이 변하지 않는다.
+
+2) 엔티티와 API 스펙을 명확하게 분리할 수 있음
+
+### 회원 수정
+
+- DTO를 통해서 업데이트(변경 감지 사용)
+
+```java
+@PutMapping("/api/v2/members/{id}")
+public UpdateMemberResponse updateMemberV2(@PathVariable("id") Long id,
+@RequestBody @Valid UpdateMemberRequest request) {
+      memberService.update(id, request.getName());
+      Member findMember = memberService.findOne(id);
+      return new UpdateMemberResponse(findMember.getId(), findMember.getName());
+}
+
+~~~~
+@Transactional
+ public void update(Long id, String name) {
+ Member member = memberRepository.findOne(id);
+ member.setName(name);
+ }
+```
+
+1) DTO를 받아와서 변경 감지를 통해서 데이터를 변경
+
+변경감지란 ?
+→ memberRepository.findOne 을 통해서 영속성으로 엔티티를 가져오면 해당 객체를 수정하는 것만으로도 트랜잭션이 끝날 때 영속성 관리를 통해서 변경된 객체에 맞는 쿼리가 실행됨
+
+### 회원 조회
+
+V1
+
+- 엔티티를 직접 조회
+
+```java
+@GetMapping("/api/v1/members")
+ public List<Member> membersV1() {
+      return memberService.findMembers();
+ }
+
+~~~~~~~~~~~~~
+
+public List<Member> findMembers(){
+        return memberRepository.findAll();
+    }
+
+~~~~~~~~~~~~~
+
+public List<Member> findAll(){
+        return em.createQuery("select m from Member m", Member.class)
+                .getResultList();
+    }
+```
+
+1) 기본적으로 엔티티의 모든값이 표현
+
+2) 스펙을 맞추기 위한 @JsonIgnore 등이 사용해야 하는데 여러 api 스펙을 맞추기에 좋지 않음
+> 엔티티를 수정하는 것이기 때문에
+
+3) 엔티티가 변경되면 API 스펙이 변한다.
+
+4) 컬렉션을 그대로 반환하면 좋지 않음( 값 등을 추가하기가 어려움)
+
+```java
+{
+COUNT : 1,
+[ ~~ ]
+}
+```
+
+V2
+
+- 응닶 값으로 엔티티가 아닌 별도의 DTO 사용
+
+```java
+@GetMapping("/api/v2/members")
+ public Result membersV2() {
+       List<Member> findMembers = memberService.findMembers();
+ 
+      //엔티티 -> DTO 변환
+       List<MemberDto> collect = findMembers.stream()
+       .map(m -> new MemberDto(m.getName()))
+       .collect(Collectors.toList());
+       return new Result(collect);
+ }
+
+~~~~~~~~~~~~~~~
+
+@Data
+    @AllArgsConstructor
+    static class MemberDto {
+        private String name;
+    }
+
+@Data
+    @AllArgsConstructor
+    static class Result<T>{
+        private int count;
+        private T data;
+    }
+```
+
+1) 엔티티를 DTO로 변환해서 반환한다.
+
+2) 엔티티가 변해도 API 스펙이 변경되지 않는다.
+
+3) Result 클래스로 컬렉션을 감싸서 나중에라도 필요한 필드를 추가할 수 있다.
 
 
 
