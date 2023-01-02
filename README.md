@@ -266,8 +266,6 @@ V2
 3) Result 클래스로 컬렉션을 감싸서 나중에라도 필요한 필드를 추가할 수 있다.
 
 
-
-
 주문 API 관련 정리
 간단한 주문 조회(X TO ONE)
 V1
@@ -572,10 +570,9 @@ public List<Order> findAllWithItem() {
 1) 페치조인으로 쿼리가 한번만 실행됨
 2) 1대 다 관계로 페이징 불가능(가능은 한데 메모리에 다올림)
 3) 컬렉션 여러번 fetch join 불가능
-
  
- 
- V3.1
+ jpa3
+V3.1
 엔티티를 DTO로 변환 - 페이징과 한계돌파
 @GetMapping("/api/v3.1/orders")
 public List<OrderDto> ordersV3_page(@RequestParam(value = "offset",
@@ -786,9 +783,4 @@ public List<OrderQueryDto> ordersV6() {
 2) 페이징 안되고
 3) 메모리 부하도 걱정됨
 4) 쿼리도 빠를 거라는 보장이 없음
- 
-
-
-
-
 
