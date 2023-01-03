@@ -859,3 +859,75 @@ public List<OrderQueryDto> ordersV6() {
 3) 메모리 부하도 걱정됨
 
 4) 쿼리도 빠를 거라는 보장이 없음
+
+
+# 2023.01.03
+
+
+## OSLV 란?
+
+→ 트랜잭션 안에서만 영속성 관리를 진행(false)
+
+→ 컨트롤러가 아예 실행이 완료 될 때까지 영속성 관리를 진행(true)
+
+![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/fabe7d2d-8eb1-4659-992a-f2658eadf681/Untitled.png)
+
+true 시 단점 - 영속성 관리를 한다는 것은 db 자원 소스를 가지고 있다는 것으로 connection 의 문제가 존재할 수 있다.
+
+true 시 장점 - 지연 로딩 사용 편리
+
+false 시 단점 - 지연로딩을 트랜잭션안에서 실행해야함
+
+false 시 장점 - db 자원 소스를 바로바로 반ghks으라 해줌
+
+- Command와 Query를 분리해서 사용
+
+OrderService: 핵심 비즈니스 로직
+OrderQueryService: 화면이나 API에 맞춘 서비스 (주로 읽기 전용 트랜잭션 사용)
+
+## 스프링 JPA 란?
+
+인터페이스에 자주 쓰는 코드를 등록해 놓은 내용
+
+```java
+package jpabook.jpashop.repository;
+import jpabook.jpashop.domain.Member;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+public interface MemberRepository extends JpaRepository<Member, Long> {
+     List<Member> findByName(String name);
+}
+```
+
+## QUERY DSL 이란?
+
+동적 쿼리를 편리하게 사용 할 수 있는 소스
+
+```java
+public List<Order> findAll(OrderSearch orderSearch) {
+ QOrder order = QOrder.order;
+ QMember member = QMember.member;
+   return query
+   .select(order)
+   .from(order)
+   .join(order.member, member)
+   .where(statusEq(orderSearch.getOrderStatus()),
+   nameLike(orderSearch.getMemberName()))
+   .limit(1000)
+   .fetch();
+}
+private BooleanExpression statusEq(OrderStatus statusCond) {
+ if (statusCond == null) {
+ return null;
+ }
+ return order.status.eq(statusCond);
+}
+private BooleanExpression nameLike(String nameCond) {
+ if (!StringUtils.hasText(nameCond)) {
+ return null;
+ }
+ return member.name.like(nameCond);
+}
+```
+
+=⇒ JPA DATA 및 QUERY DSL 은 이후 강의에서 내용 정리 예정
