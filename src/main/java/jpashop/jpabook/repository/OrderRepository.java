@@ -1,7 +1,13 @@
 package jpashop.jpabook.repository;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import jpashop.jpabook.domain.Order;
+import jpashop.jpabook.domain.OrderStatus;
+import jpashop.jpabook.domain.QMember;
+import jpashop.jpabook.domain.QOrder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -11,8 +17,12 @@ import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static jpashop.jpabook.domain.QMember.member;
+import static jpashop.jpabook.domain.QOrder.order;
+
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class OrderRepository {
 
     private final EntityManager em;
@@ -25,7 +35,7 @@ public class OrderRepository {
         return em.find(Order.class, id);
     }
 
-    public List<Order> findAll(OrderSearch orderSearch) {
+/*    public List<Order> findAll(OrderSearch orderSearch) {
 
         return em.createQuery("select o from Order o join o.member m" +
                 " where o.status = :status "+
@@ -34,6 +44,32 @@ public class OrderRepository {
                 .setParameter("name", orderSearch.getMemberName())
                 .setMaxResults(1000) // 최대 1000건
                 .getResultList();
+    }*/
+
+    public List<Order> findAll(OrderSearch orderSearch) {
+        JPAQueryFactory query = new JPAQueryFactory(em);
+
+        return query
+                .select(order)
+                .from(order)
+                .join(order.member, member)
+                .where(statusEq(orderSearch.getOrderStatus()), nameLike(orderSearch.getMemberName()))
+                .limit(1000)
+                .fetch();
+    }
+
+    private BooleanExpression nameLike(String memberName) {
+        if (!StringUtils.hasText(memberName)){
+            return null;
+        }
+        return member.name.like(memberName);
+    }
+
+    private BooleanExpression statusEq(OrderStatus statusCond){
+        if(statusCond == null) {
+            return null;
+        }
+        return order.status.eq(statusCond);
     }
 
     /**
